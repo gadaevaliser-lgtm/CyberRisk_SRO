@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # 1. Наш главный сайт-визитка (Nginx)
+  web:
+    image: nginx:alpine
+    container_name: sro2_web_site
+    ports:
+      - "8080:80"
+    volumes:
+      - ./apps/web/index.html:/usr/share/nginx/html/index.html
+    restart: always
+
+  # 2. Кеширующая база данных (Redis)
+  cache:
+    image: redis:alpine
+    container_name: sro2_redis_cache
+    restart: always
+
+  # 3. Реляционная база данных (PostgreSQL)
+  database:
+    image: postgres:alpine
+    container_name: sro2_postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cyberdb
+    restart: always
+
+  # 4. Простой сервис на Python (Эхо / Статус)
+  api_service:
+    image: python:3.11-alpine
+    container_name: sro2_python_api
+    command: python -m http.server 80
+    ports:
+      - "8081:80"
+    restart: always
