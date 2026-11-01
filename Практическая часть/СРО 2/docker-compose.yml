@@ -1,37 +1,50 @@
 version: '3.8'
 
 services:
-  # 1. Наш главный сайт-визитка (Nginx)
+  # 1. Основной сайт-визитка (Nginx)
   web:
     image: nginx:alpine
-    container_name: sro2_web_site
+    container_name: sro2_web
     ports:
       - "8080:80"
     volumes:
       - ./apps/web/index.html:/usr/share/nginx/html/index.html
     restart: always
 
-  # 2. Кеширующая база данных (Redis)
-  cache:
-    image: redis:alpine
-    container_name: sro2_redis_cache
-    restart: always
-
-  # 3. Реляционная база данных (PostgreSQL)
-  database:
-    image: postgres:alpine
-    container_name: sro2_postgres_db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: cyberdb
-    restart: always
-
-  # 4. Простой сервис на Python (Эхо / Статус)
-  api_service:
+  # 2. Сервис калькулятора на Python
+  calculator:
     image: python:3.11-alpine
-    container_name: sro2_python_api
+    container_name: sro2_calculator
     command: python -m http.server 80
     ports:
-      - "8081:80"
+      - "8082:80"
+    restart: always
+
+  # 3. Сервис счетчика на Python
+  counter:
+    image: python:3.11-alpine
+    container_name: sro2_counter
+    command: python -m http.server 80
+    ports:
+      - "8083:80"
+    restart: always
+
+  # 4. Кеширующая база данных (Redis)
+  cache:
+    image: redis:alpine
+    container_name: sro2_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # 5. Реляционная база данных (PostgreSQL)
+  database:
+    image: postgres:alpine
+    container_name: sro2_postgres
+    environment:
+      POSTGRES_USER: cyberuser
+      POSTGRES_PASSWORD: cyberpassword
+      POSTGRES_DB: cyberdb
+    ports:
+      - "5432:5432"
     restart: always
